@@ -1,5 +1,3 @@
-Here's a standard `README.md` template for your project. This covers essential sections that are typically found in open-source projects and should serve as a solid foundation:
-
 # DashboardApp
 
 A terminal-based dashboard application for UNIX-like systems that displays system information, weather, tasks, and stock data in an ASCII-styled interface. This project is compatible with various Linux distributions and macOS.
