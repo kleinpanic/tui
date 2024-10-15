@@ -30,7 +30,7 @@ Before installing the DashboardApp, make sure your system meets the following re
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/DashboardApp.git
+   git clone https://github.com/kleinpanic/tui-dashboard.git
    cd DashboardApp
    ```
 
@@ -79,8 +79,8 @@ Example:
 ```
 1    Finish report    Work    High    0    2024-10-20    Weekly
 ```
-
 - **Completion**: `1` indicates completed (`[X]`), `0` indicates not completed (`[ ]`).
+- This functionality comes from my todo app that i built and wrote in C. This is also on my github. To customize this code for you you will either need to install that program as well or delete this functionality / modify it to whatever you want it to do. 
 
 ## Supported Terminals
 DashboardApp has been tested and works on:
