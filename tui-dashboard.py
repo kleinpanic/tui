@@ -106,13 +106,20 @@ class DashboardApp:
             except:
                 temperature = "N/A"
             
-            return f"""CPU: {cpu_usage}%
-Avg Load: {avg_load[0]:.2f}, {avg_load[1]:.2f}, {avg_load[2]:.2f}
-Memory: {memory.percent}%
-Disk Usage: {disk.percent}%
-CPU Temp: {temperature}
-Uptime: {uptime_string}
-Net In/Out: {net_io.bytes_recv / (1024 * 1024):.2f}MB / {net_io.bytes_sent / (1024 * 1024):.2f}MB"""
+            return f"""
+╔════════════════════════════════════════════════╗
+║                  System Info                   ║
+╠════════════════════════════════════════════════╣
+║                                                ║
+║ CPU: {cpu_usage}%                              
+║ Avg Load: {avg_load[0]:.2f}, {avg_load[1]:.2f}, {avg_load[2]:.2f}
+║ Memory: {memory.percent}%                   
+║ Disk Usage: {disk.percent}%                  
+║ CPU Temp: {temperature}                     
+║ Uptime: {uptime_string}                     
+║ Net In/Out: {net_io.bytes_recv / (1024 * 1024):.2f}MB / {net_io.bytes_sent / (1024 * 1024):.2f}MB
+╚════════════════════════════════════════════════╝
+"""
         
         # Non-Raspberry Pi-specific info (Battery, etc.)
         else:
@@ -124,14 +131,21 @@ Net In/Out: {net_io.bytes_recv / (1024 * 1024):.2f}MB / {net_io.bytes_sent / (10
 
             battery_monitor_status = self.check_battery_monitor_service()
 
-            return f"""CPU: {cpu_usage}%
-Avg Load: {avg_load[0]:.2f}, {avg_load[1]:.2f}, {avg_load[2]:.2f}
-Memory: {memory.percent}%
-Disk Usage: {disk.percent}%
-Battery: {battery_discharge}
-{battery_monitor_status}
-Uptime: {uptime_string}
-Net In/Out: {net_io.bytes_recv / (1024 * 1024):.2f}MB / {net_io.bytes_sent / (1024 * 1024):.2f}MB"""
+            return f"""
+╔════════════════════════════════════════════════╗
+║                  System Info                   ║
+╠════════════════════════════════════════════════╣
+║                                                ║
+║ CPU: {cpu_usage}%                              
+║ Avg Load: {avg_load[0]:.2f}, {avg_load[1]:.2f}, {avg_load[2]:.2f}
+║ Memory: {memory.percent}%                   
+║ Disk Usage: {disk.percent}%                  
+║ Battery: {battery_discharge}              
+║ {battery_monitor_status}            
+║ Uptime: {uptime_string}                     
+║ Net In/Out: {net_io.bytes_recv / (1024 * 1024):.2f}MB / {net_io.bytes_sent / (1024 * 1024):.2f}MB
+╚════════════════════════════════════════════════╝
+"""
 
     def weather_info(self):
         def fetch_from_wttr():
@@ -175,15 +189,25 @@ Net In/Out: {net_io.bytes_recv / (1024 * 1024):.2f}MB / {net_io.bytes_sent / (10
                     else:
                         clothing = "Light clothing suitable for warm weather."
 
-                    return f"""Location: {location}
-Date: {current_time}
-Condition: {condition}
-Temp: {temp}
-Wind: {wind}
-Humidity: {humidity}
-Sunrise: {sunrise}
-Sunset: {sunset}
-Recommended Clothing: {clothing}"""
+                    return f"""
+╔════════════════════════════════════════════════╗
+║                Weather Information             ║
+╠════════════════════════════════════════════════╣
+║                                                ║
+║ Location: {location}                           
+║ Date: {date} - {datetime.now().strftime('%H:%M')}  
+║ Condition: {condition}                         
+║ Temp: {temp}                                   
+║ Wind: {wind}                                   
+║ Humidity: {humidity}                           
+║ Sunrise: {sunrise}                             
+║ Sunset: {sunset}                               
+║                                                ║ 
+║ ────────────────────────────────────────────── ║
+║ Recommended Clothing:                          ║
+║ {clothing}
+╚════════════════════════════════════════════════╝
+"""
                 else:
                     return None
             except:
@@ -226,12 +250,22 @@ Recommended Clothing: {clothing}"""
                     else:
                         clothing = "Light clothing suitable for warm weather."
 
-                    return f"""Location: {location}
-Date: {current_time}
-Temp: {temp_fahrenheit:.2f}°F ({temp_celsius:.2f}°C)
-Wind: {wind_speed} km/h
-Humidity: {humidity}
-Recommended Clothing: {clothing}"""
+                    return f"""
+╔════════════════════════════════════════════════╗
+║                Weather Information             ║
+╠════════════════════════════════════════════════╣
+║                                                ║
+║ Location:       {location}                     
+║ Date:           {current_time}                 
+║ Temperature:    {temp_fahrenheit:.2f}°F ({temp_celsius:.2f}°C) 
+║ Wind:           {wind_speed} km/h              
+║ Humidity:       {humidity}                     
+║                                                ║
+║ ────────────────────────────────────────────── ║
+║ Recommended Clothing:                          ║
+║ {clothing}                                    
+╚════════════════════════════════════════════════╝
+"""
                 else:
                     return None
             except:
@@ -268,28 +302,45 @@ Recommended Clothing: {clothing}"""
         with open(tasks_file, 'r') as f:
             for line in f:
                 task_info = line.strip().split("\t")
-                if len(task_info) == 6:
-                    task_num, name, category, priority, complete, due_date = task_info
+                if len(task_info) == 7:
+                    task_num, name, category, priority, complete, due_date, recurrence = task_info
                     complete_str = "[X]" if complete == "1" else "[ ]"
-                    tasks.append(f"{task_num}. {name} ({category}) - Priority: {priority} Due: {due_date} {complete_str}")
+                    tasks.append(f"║ {task_num}. {name} ({category}) - Priority: {priority} {complete_str}")
+                    tasks.append(f"║ Due: {due_date} | Recurs: {recurrence}")
 
-        return "\n".join(tasks) if tasks else "No tasks available."
+        tasks_content = "\n".join(tasks) if tasks else "No tasks available."
+    
+        return f"""
+╔════════════════════════════════════════════════╗
+║                   Tasks List                   ║
+╠════════════════════════════════════════════════╣
+{tasks_content}
+╚════════════════════════════════════════════════╝
+"""
 
     def stocks_info(self):
         stock_symbols = self.get_config_stocks()
         if not stock_symbols or stock_symbols == ['']:
             return "No stocks configured in ~/.config/dailyapp/conf.conf"
 
-        stock_info = ""
+        stock_info = []
         for symbol in stock_symbols:
             stock = yf.Ticker(symbol.strip())
             try:
                 price = stock.history(period="1d")['Close'].iloc[-1]
-                stock_info += f"{symbol}: ${price:.2f}\n"
+                stock_info.append(f"║ {symbol}: ${price:.2f}")
             except (KeyError, IndexError):
-                stock_info += f"{symbol}: Data not available\n"
+                stock_info.append(f"║ {symbol}: Data not available")
 
-        return stock_info.strip()
+        stock_content = "\n".join(stock_info) if stock_info else "No stock data available."
+    
+        return f"""
+╔════════════════════════════════════════════════╗
+║                  Stocks Info                   ║
+╠════════════════════════════════════════════════╣
+{stock_content}
+╚════════════════════════════════════════════════╝
+"""
 
     def auto_refresh_weather(self):
         """Auto-refresh weather every 15 minutes."""
@@ -309,31 +360,49 @@ Recommended Clothing: {clothing}"""
         mid_y = height // 2
         mid_x = width // 2
 
-        # Define windows (quadrants)
-        system_win = self.stdscr.subwin(mid_y - 1, mid_x - 1, 0, 0)
-        weather_win = self.stdscr.subwin(mid_y - 1, width - mid_x - 1, 0, mid_x + 1)
-        tasks_win = self.stdscr.subwin(height - mid_y - 1, mid_x - 1, mid_y + 1, 0)
-        stocks_win = self.stdscr.subwin(height - mid_y - 1, width - mid_x - 1, mid_y + 1, mid_x + 1)
+        # Define windows (quadrants), ensuring they fit within the screen dimensions
+        system_win_height = max(3, mid_y - 1)
+        system_win_width = max(10, mid_x - 1)
+        weather_win_height = max(3, mid_y - 1)
+        weather_win_width = max(10, width - mid_x - 1)
+        tasks_win_height = max(3, height - mid_y - 1)
+        tasks_win_width = max(10, mid_x - 1)
+        stocks_win_height = max(3, height - mid_y - 1)
+        stocks_win_width = max(10, width - mid_x - 1)
+
+        # Adjust subwindows
+        system_win = self.stdscr.subwin(system_win_height, system_win_width, 0, 0)
+        weather_win = self.stdscr.subwin(weather_win_height, weather_win_width, 0, mid_x + 1)
+        tasks_win = self.stdscr.subwin(tasks_win_height, tasks_win_width, mid_y + 1, 0)
+        stocks_win = self.stdscr.subwin(stocks_win_height, stocks_win_width, mid_y + 1, mid_x + 1)
 
         # Draw lines separating the windows
         self.stdscr.vline(0, mid_x, curses.ACS_VLINE, height)
         self.stdscr.hline(mid_y, 0, curses.ACS_HLINE, width)
 
         # Draw system info
-        system_win.addstr(0, 0, "System Info:")
-        system_win.addstr(2, 0, self.system_info())
+        system_win.clear()
+        system_win.box()
+        system_win.addstr(1, 2, "System Info:")
+        self.display_in_window(system_win, 3, 2, self.system_info())
 
         # Draw weather info
-        weather_win.addstr(0, 0, "Weather Info:")
-        weather_win.addstr(2, 0, self.weather_data)  # Use refreshed data
+        weather_win.clear()
+        weather_win.box()
+        weather_win.addstr(1, 2, "Weather Info:")
+        self.display_in_window(weather_win, 3, 2, self.weather_data)
 
         # Draw tasks info
-        tasks_win.addstr(0, 0, "Tasks:")
-        tasks_win.addstr(2, 0, self.tasks_info())
+        tasks_win.clear()
+        tasks_win.box()
+        tasks_win.addstr(1, 2, "Tasks:")
+        self.display_in_window(tasks_win, 3, 2, self.tasks_info())
 
         # Draw stocks info
-        stocks_win.addstr(0, 0, "Stocks:")
-        stocks_win.addstr(2, 0, self.stock_data)  # Use refreshed data
+        stocks_win.clear()
+        stocks_win.box()
+        stocks_win.addstr(1, 2, "Stocks:")
+        self.display_in_window(stocks_win, 3, 2, self.stocks_info())
 
         # Refresh all windows
         system_win.refresh()
@@ -343,16 +412,25 @@ Recommended Clothing: {clothing}"""
 
     def draw_monocle(self):
         self.stdscr.clear()
-        height, width = self.stdscr.getmaxyx()
+        width = self.stdscr.getmaxyx()[1]  # Only get the width, as height is not needed
 
         # Draw the active window in monocle mode
         window_func = self.windows[self.active_window]
         title = self.window_titles[self.active_window]
 
-        # Center the text
-        self.stdscr.addstr(0, 0, f"{title}:")
-        self.stdscr.addstr(2, 0, window_func())
+        # Center the title
+        self.stdscr.addstr(0, (width // 2) - (len(title) // 2), f"{title}:", curses.A_BOLD)
+        self.display_in_window(self.stdscr, 2, 0, window_func())
+
         self.stdscr.refresh()
+
+    def display_in_window(self, window, start_y, start_x, text):
+        """Helper function to handle multiline text and text wrapping."""
+        max_y, max_x = window.getmaxyx()
+        lines = text.split('\n')
+        for i, line in enumerate(lines):
+            if start_y + i < max_y - 1:
+                window.addnstr(start_y + i, start_x, line, max_x - start_x - 1)
 
     def main_loop(self):
         # Main loop to keep the screen updated
@@ -387,7 +465,15 @@ Recommended Clothing: {clothing}"""
             else:
                 self.draw_tiling()
 
-            time.sleep(0.1)  # Sleep to prevent high CPU usage
+            if curses.is_term_resized(*self.stdscr.getmaxyx()):
+                # Handle resizing gracefully
+                self.stdscr.clear()
+                if self.monocle_mode:
+                    self.draw_monocle()
+                else:
+                    self.draw_tiling()
+
+            time.sleep(0.05)  # Sleep to prevent high CPU usage
 
 def main(stdscr):
     app = DashboardApp(stdscr)
