@@ -473,7 +473,7 @@ class DashboardApp:
                 else:
                     self.draw_tiling()
 
-            time.sleep(0.05)  # Sleep to prevent high CPU usage
+            time.sleep(60)
 
 def main(stdscr):
     app = DashboardApp(stdscr)
